@@ -1,11 +1,25 @@
 """
-Standart in-place Mergesort implementation for training purposes.
+Simple in-place Mergesort implementation for training purposes.
+Added 'key' function just like in Python STL 'sorted()' to sort arbitrary objects.
 """
 from typing import Any, Callable, List, Optional
 
 
 def sort(input_list: List[Any], key: Optional[Callable[[Any], Any]] = None) -> None:
+    """Main wrapper function of the module.
 
+    Parameters
+    ----------
+    input_list : List[Any]
+        List to be sorted.
+    key : Optional[Callable[[Any], Any]]
+        A function (or other callable) to be called on each list element prior to making comparisons.
+
+    Returns
+    -------
+    None
+
+    """
     if not input_list:
         return
 
@@ -18,18 +32,18 @@ def _merge_sort(
     right_index: int,
     key: Callable[[Any], Any],
 ) -> None:
-    """Merge Sort Recursive Function
+    """Merge Sort Recursive Function.
 
     Parameters
     ----------
     input_list : List[Any]
-        input_list
+        List that is being sorted.
     left_index : int
-        left_index
+        Left margin of a processing segment.
     right_index : int
-        right_index
-    key : Optional[Callable[[Any], Any]]
-        key
+        Right margin of a segment.
+    key : Callable[[Any], Any]
+        Key callable.
 
     Returns
     -------
@@ -54,18 +68,20 @@ def _merge(
     middle: int,
     key: Callable[[Any], Any],
 ) -> None:
-    """List merging subroutine.
+    """List merging routine.
 
     Parameters
     ----------
     input_list : List[Any]
-        input_list
+        List that is being sorted.
     left_index : int
-        left_index
+        Left margin of a processing segment.
     right_index : int
-        right_index
+        Right margin of a segment.
     middle : int
-        middle
+        Middle point of a segment.
+    key : Callable[[Any], Any]
+        Key callable.
 
     Returns
     -------
@@ -87,7 +103,7 @@ def _merge(
             left_copy_index += 1
         else:
             input_list[sorted_index] = right_copy[right_copy_index]
-            right_copy_index = right_copy_index + 1
+            right_copy_index += 1
         sorted_index += 1
 
     # Adding the rest
