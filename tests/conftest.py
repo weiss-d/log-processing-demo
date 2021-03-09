@@ -120,12 +120,22 @@ def fake_api_error_dict():
 @pytest.fixture
 def mock_requests_get(mocker, fake_api_response_dict):
     mock = mocker.patch("requests.get")
-    mock.return_value.__enter__.return_value.json.return_value = fake_api_response_dict
+    mock.return_value.json.return_value = fake_api_response_dict
     return mock
 
 
 @pytest.fixture
 def mock_requests_get_incorrect_date(mocker, fake_api_error_dict):
     mock = mocker.patch("requests.get")
-    mock.return_value.__enter__.return_value.json.return_value = fake_api_error_dict
+    mock.return_value.json.return_value = fake_api_error_dict
+    return mock
+
+
+@pytest.fixture
+def mock_requests_get_error(mocker):
+    def error_function():
+        raise ValueError("Test error message.")
+
+    mock = mocker.patch("requests.get")
+    mock.return_value.raise_for_status = error_function
     return mock

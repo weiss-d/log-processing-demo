@@ -23,3 +23,10 @@ def test_get_response_for_incorrect_date(mock_requests_get_incorrect_date):
     with pytest.raises(ValueError) as error:
         receiver("2021")
     assert "created_day: does not match format" in str(error.value)
+
+
+def test_request_error(mock_requests_get_error):
+    receiver = log_receiver.LogReceiver("http://www.dsdev.tech/logs/")
+    with pytest.raises(log_receiver.RequestError) as error:
+        receiver("2021")
+    assert "Test error message." in str(error.value)
