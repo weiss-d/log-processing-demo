@@ -115,3 +115,17 @@ def fake_api_error_dict():
     return {
         "error": "created_day: does not match format 20200105 (year - 2021, month - 01, day - 05)"
     }
+
+
+@pytest.fixture
+def mock_requests_get(mocker, fake_api_response_dict):
+    mock = mocker.patch("requests.get")
+    mock.return_value.__enter__.return_value.json.return_value = fake_api_response_dict
+    return mock
+
+
+@pytest.fixture
+def mock_requests_get_incorrect_date(mocker, fake_api_error_dict):
+    mock = mocker.patch("requests.get")
+    mock.return_value.__enter__.return_value.json.return_value = fake_api_error_dict
+    return mock
