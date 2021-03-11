@@ -11,7 +11,6 @@ from log_processing_demo.sort import sort
 
 LOG_LIST_NAME = "logs"
 ERROR_NAME = "error"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 LOG_DATE_NAME = "created_at"
 
 
@@ -73,9 +72,7 @@ class LogReceiver:
 
         log_list = data[LOG_LIST_NAME]
         for element in log_list:
-            element[LOG_DATE_NAME] = datetime.strptime(
-                element[LOG_DATE_NAME], DATE_FORMAT
-            )
+            element[LOG_DATE_NAME] = datetime.fromisoformat(element[LOG_DATE_NAME])
 
         if sort_by_time:
 
