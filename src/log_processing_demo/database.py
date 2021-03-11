@@ -1,6 +1,6 @@
 import logging
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Union
 
 logger = logging.getLogger(__name__)
@@ -55,25 +55,24 @@ class Database:
         self, date: str, time_interval: Optional[Tuple[str]] = None
     ) -> List[Dict[str, Union[datetime, str]]]:
         if time_interval:
-            self.cursor.execute(
-                """
-                SELECT created_at, user_id, first_name, second_name, message
-                FROM log_messages
-                WHERE created_at > ? AND created_at < ?
-                ORDER BY created_at;
-                """,
-                (
-                    datetime.fromisoformat(f"{date}T{time_interval[0]}"),
-                    datetime.fromisoformat(f"{date}T{time_interval[1]}"),
-                ),
+            time_boundaries: Tuple[datetime] = (
+                datetime.fromisoformat(f"{date}T{time_interval[0]}"),
+                datetime.fromisoformat(f"{date}T{time_interval[1]}"),
             )
         else:
-            self.cursor.execute(
-                """
-                SELECT created_at, user_id, first_name, second_name, message
-                FROM log_messages
-                ORDER BY created_at;
-                """
+            time_boundaries: Tuple[datetime] = (
+                datetime.fromisoformat(f"{date}"),
+                datetime.fromisoformat(f"{date}") + timedelta(days=1),
             )
+
+        self.cursor.execute(
+            """
+            SELECT created_at, user_id, first_name, second_name, message
+            FROM log_messages
+            WHERE created_at > ? AND created_at < ?
+            ORDER BY created_at;
+            """,
+            time_boundaries,
+        )
 
         return [dict(item) for item in self.cursor.fetchall()]
