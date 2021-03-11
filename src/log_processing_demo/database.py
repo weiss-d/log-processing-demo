@@ -121,7 +121,7 @@ class Database:
 
     @db_logging("retrieve LOG data")
     def read(
-        self, date: str, time_interval: Optional[Tuple[str]] = None
+        self, date: str, time_interval: Optional[Tuple[str, str]] = None
     ) -> List[Dict[str, Union[datetime, str]]]:
         """Read log messages for desired date from database, optionally filtering by time.
 
@@ -138,13 +138,15 @@ class Database:
             Structure is identical to LogReceiver output.
 
         """
+        time_boundaries: Tuple[datetime, datetime]
+
         if time_interval:
-            time_boundaries: Tuple[datetime] = (
+            time_boundaries = (
                 datetime.fromisoformat(f"{date}T{time_interval[0]}"),
                 datetime.fromisoformat(f"{date}T{time_interval[1]}"),
             )
         else:
-            time_boundaries: Tuple[datetime] = (
+            time_boundaries = (
                 datetime.fromisoformat(f"{date}"),
                 datetime.fromisoformat(f"{date}") + timedelta(days=1),
             )

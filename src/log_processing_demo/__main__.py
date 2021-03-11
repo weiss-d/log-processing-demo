@@ -12,7 +12,7 @@ from log_processing_demo import database, log_receiver
 logging.basicConfig(
     level=logging.INFO,
     format="[%(asctime)s] %(message)s",
-    datefmt="%d-%m-%y %H:%M:%S",
+    datefmt="%y-%m-%d %H:%M:%S",
 )
 
 # Commands and arguments handling
@@ -20,6 +20,7 @@ logging.basicConfig(
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(title="commands", dest="command")
 
+# -- Command for fetching log messages from URL and putting them to the DB
 parser_fetch = subparsers.add_parser("fetch")
 parser_fetch.add_argument("base_url", type=str, help="Base LOG API URL.")
 parser_fetch.add_argument("date_path", type=str, help="LOG date in format YYYYMMDD")
@@ -31,6 +32,7 @@ parser_fetch.add_argument(
     default=Path("database.db"),
 )
 
+# -- Command to view log messages from the DB in JSON format
 parser_show = subparsers.add_parser("show")
 parser_show.add_argument(
     "date", type=str, help="Date of LOG messages. Format: YYYY-MM-DD"
