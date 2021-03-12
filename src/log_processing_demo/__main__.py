@@ -5,6 +5,7 @@ Entry point for command line use.
 import argparse
 import json
 import logging
+import sys
 from pathlib import Path
 
 from log_processing_demo import database, log_receiver
@@ -60,12 +61,28 @@ args = parser.parse_args()
 # Processing a command
 
 if args.command == "fetch":
-    get_logs = log_receiver.LogReceiver(args.base_url)
-    db = database.Database(args.db_file)
-    db.update(get_logs(args.date_path))
+    print("Fetching LOG data...")
+    try:
+        get_logs = log_receiver.LogReceiver(args.base_url)
+        db = database.Database(args.db_file)
+        db.update(get_logs(args.date_path))
+        print("Done.")
+    except Exception as error:
+        logging.exception(error)
+        sys.exit(
+            f"Error fetching LOG data: {str(error)}\nSee additional info in logfile."
+        )
 elif args.command == "show":
-    db = database.Database(args.db_file)
-    time_interval = tuple(args.interval.split("-")) if args.interval else None
-    for element in db.read(args.date, time_interval):
-        element["created_at"] = str(element["created_at"])
-        print(json.dumps(element, ensure_ascii=False))
+    if not args.db_file.exists():
+        sys.exit(f"DB file ({args.db_file}) does not exist.")
+    try:
+        db = database.Database(args.db_file)
+        time_interval = tuple(args.interval.split("-")) if args.interval else None
+        for element in db.read(args.date, time_interval):
+            element["created_at"] = str(element["created_at"])
+            print(json.dumps(element, ensure_ascii=False))
+    except Exception as error:
+        logging.exception(error)
+        sys.exit(
+            f"Error reading LOG data from DB: {str(error)}\nSee additional info in logfile."
+        )

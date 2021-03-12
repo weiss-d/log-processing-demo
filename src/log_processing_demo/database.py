@@ -24,11 +24,22 @@ def db_logging(log_statement: str):
         def wrapper(*args, **kwargs):
             try:
                 result_or_none = function(*args, **kwargs)
-                logger.info("%s - success: %s.", function.__name__, log_statement)
+                logger.info(
+                    "%s - success: %s.\nArguments:%s, %s",
+                    function.__name__,
+                    log_statement,
+                    str(args)[:100],
+                    str(kwargs)[:100],
+                )
                 return result_or_none
             except Exception as error:
                 logger.error(
-                    "%s - ERROR: %s.\n%s", function.__name__, log_statement, str(error)
+                    "%s - ERROR: %s.\n%s\nArguments:%s, %s",
+                    function.__name__,
+                    log_statement,
+                    str(error),
+                    str(args)[:100],
+                    str(kwargs)[:100],
                 )
                 raise
 
