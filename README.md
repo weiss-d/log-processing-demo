@@ -2,11 +2,11 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## СТРУКТУРА ПРОЕКТА
-```
+```shell
 .
 ├── src
 │   └── log_processing_demo
-│       ├── database.py  # взаимодействие с БД
+│       ├── database.py  # взаимодействие с БД SQLite
 │       ├── __init__.py
 │       ├── log_receiver.py  # загрузка и обработка логов
 │       ├── __main__.py  # CLI-скрипт
@@ -26,7 +26,7 @@ $ pip install git+https://github.com/weiss-d/log-processing-demo.git
 
 ## ЗАПУСК
 
-```shell
+```
 $ python -m log_processing_demo --help
 usage: __main__.py [-h] {fetch,show} ...
 
@@ -40,7 +40,7 @@ commands:
 ```
 
 ### Загрузка логов на заданную дату через API - `fetch`:
-```shell
+```
 $ python -m log_processing_demo fetch --help
 usage: __main__.py fetch [-h] base_url date_path [db_file]
 
@@ -53,13 +53,16 @@ optional arguments:
   -h, --help  show this help message and exit
 
 ```
+По умолчанию данные сохраняются в файл `database.db` в директории, из-под которой был запущен скрипт. В ту же директорию пишется лог самого скрипта в файл `log_processing_demo.log`.
+
+
 Пример:
 ```shell
 $ python -m log_processing_demo fetch http://www.dsdev.tech/logs 20210123
 ```
 
 ### Отображение логов на заданную дату и временной интервал - `show`:
-```shell
+```
 $ python -m log_processing_demo show --help
 usage: __main__.py show [-h] [-i INTERVAL] date [db_file]
 
@@ -72,6 +75,9 @@ optional arguments:
   -i INTERVAL, --interval INTERVAL
                 Time interval. Format: HH:MM:SS-HH:MM:SS
 ```
+Если не указан файл БД, то по умолчанию данные считываются из файла `database.db` в директории, из-под которой был запущен скрипт.
+
+
 Пример:
 ```shell
 $ python -m log_processing_demo read 2021-01-23 -i 00:00:00-11:00:00
