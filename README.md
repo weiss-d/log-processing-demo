@@ -80,7 +80,7 @@ optional arguments:
 
 Пример:
 ```shell
-$ python -m log_processing_demo read 2021-01-23 -i 00:00:00-11:00:00
+$ python -m log_processing_demo show 2021-01-23 -i 00:00:00-11:00:00
 ```
 
 ## ЗАПУСК ТЕСТОВ
