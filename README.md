@@ -61,7 +61,7 @@ optional arguments:
 $ python -m log_processing_demo fetch http://www.dsdev.tech/logs 20210123
 ```
 
-### Отображение логов на заданную дату и временной интервал - `show`:
+### Отображение логов на заданную дату и временной интервал в формате NDJSON - `show`:
 ```
 $ python -m log_processing_demo show --help
 usage: __main__.py show [-h] [-i INTERVAL] date [db_file]
