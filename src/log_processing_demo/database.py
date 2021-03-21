@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Union
 
 from log_processing_demo.log_item import LogItem
+from log_processing_demo.log_updater import LogUpdater
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ def db_logging(log_statement: str):
     return decorator
 
 
-class Database:
+class Database(LogUpdater):
     """Class to update and read from a DB."""
 
     def __init__(self, db_uri: str) -> None:
@@ -109,7 +110,11 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 created_at timestamp NOT NULL,
                 user_id TEXT NOT NULL,
-                message TEXT
+                message TEXT,
+                CONSTRAINT fk_users
+                    FOREIGN KEY (user_id)
+                    REFERENCES users(user_id)
+                    ON DELETE CASCADE
             );
             """
         )
@@ -148,7 +153,7 @@ class Database:
 
     @db_logging("retrieve LOG data")
     def read(
-        self, date: str, time_interval: Optional[Tuple[str, str]] = None
+        self, log_date: str, time_interval: Optional[Tuple[str, str]] = None
     ) -> List[Dict[str, Union[datetime, str]]]:
         """Read log messages for desired date from database, optionally filtering by time.
 
@@ -169,13 +174,13 @@ class Database:
 
         if time_interval:
             time_boundaries = (
-                datetime.fromisoformat(f"{date}T{time_interval[0]}"),
-                datetime.fromisoformat(f"{date}T{time_interval[1]}"),
+                datetime.fromisoformat(f"{log_date}T{time_interval[0]}"),
+                datetime.fromisoformat(f"{log_date}T{time_interval[1]}"),
             )
         else:
             time_boundaries = (
-                datetime.fromisoformat(f"{date}"),
-                datetime.fromisoformat(f"{date}") + timedelta(days=1),
+                datetime.fromisoformat(f"{log_date}"),
+                datetime.fromisoformat(f"{log_date}") + timedelta(days=1),
             )
 
         self.cursor.execute(
@@ -191,3 +196,32 @@ class Database:
         )
 
         return [dict(item) for item in self.cursor.fetchall()]
+
+    def flush(self, from_date: Optional[str] = None) -> None:
+        """Remove LOG messages from database. Optionally for a particular date.
+
+        Parameters
+        ----------
+        from_date : Optional[str]
+            From this date and earlier all messages will be erased.
+
+        Returns
+        -------
+        None
+
+        """
+        if from_date:
+            self.cursor.execute(
+                """
+                DELETE FROM log_messages
+                WHERE created_at > ?
+                """,
+                (datetime.fromisoformat(from_date),),
+            )
+        else:
+            self.cursor.execute(
+                """
+                DELETE FROM log_messages;
+                """
+            )
+        self.connection.commit()

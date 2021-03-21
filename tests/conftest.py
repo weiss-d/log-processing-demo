@@ -94,6 +94,30 @@ def fake_log_list_sorted():
 
 
 @pytest.fixture
+def fake_log_for_two_dates():
+    return [
+        LogItem.parse_obj(
+            {
+                "created_at": "2021-01-23T00:48:18",
+                "first_name": "Малика",
+                "message": "It is an army bred for a single purpose: To destroy the world of Men.     They will be here by nightfall. I have told your names to the Entmoot......and we have agreed......you are not      Orcs.,      It grows so cold.",
+                "second_name": "Одинцова",
+                "user_id": "315195",
+            }
+        ),
+        LogItem.parse_obj(
+            {
+                "created_at": "2021-01-24T08:18:27",
+                "first_name": "Анатолий",
+                "message": "I have left instruction. , The people are to follow your rule in     my stead.     Take up my seat in the Golden Hall. Long may you defend Edoras, if the     battle goes ill.   Then it is forfeit. Release them.,      Shall I describe it to you? Or would you like me to find you a box?",
+                "second_name": "Потапов",
+                "user_id": "283098",
+            }
+        ),
+    ]
+
+
+@pytest.fixture
 def fake_api_response_dict():
     return {
         "error": "",
@@ -164,3 +188,15 @@ def mock_requests_get_error(mocker):
     mock = mocker.patch("requests.get")
     mock.return_value.raise_for_status = error_function
     return mock
+
+
+################################################################################
+# DB fixtures
+################################################################################
+
+
+@pytest.fixture
+def tmp_db_path(tmp_path):
+    test_dir = tmp_path / "test_dir"
+    test_dir.mkdir()
+    return (test_dir / "test_database.db").as_posix()
