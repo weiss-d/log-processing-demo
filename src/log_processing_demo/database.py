@@ -7,6 +7,8 @@ import sqlite3
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Union
 
+from log_processing_demo.log_item import LogItem
+
 logger = logging.getLogger(__name__)
 
 
@@ -88,12 +90,12 @@ class Database:
         self.cursor: sqlite3.Cursor = self.connection.cursor()
 
     @db_logging("update LOG data")
-    def update(self, message_list: List[Dict[str, Union[datetime, str]]]) -> None:
+    def update(self, message_list: List[LogItem]) -> None:
         """Update database with logs fetched by LogReceiver.
 
         Parameters
         ----------
-        message_list : List[Dict[str, Union[datetime, str]]]
+        message_list : List[LogItem]
             Output of call to LogReceiver object.
 
         Returns
@@ -123,11 +125,11 @@ class Database:
                 VALUES (?, ?, ?, ?, ?);
                 """,
                 (
-                    element["created_at"],
-                    element["user_id"],
-                    element["first_name"],
-                    element["second_name"],
-                    element["message"],
+                    element.created_at,
+                    element.user_id,
+                    element.first_name,
+                    element.second_name,
+                    element.message,
                 ),
             )
         self.connection.commit()

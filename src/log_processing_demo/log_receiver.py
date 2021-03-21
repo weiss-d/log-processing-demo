@@ -7,11 +7,11 @@ from typing import Dict, List, Optional, Union
 
 import requests
 
+from log_processing_demo.log_item import LogItem
 from log_processing_demo.sort import sort
 
 LOG_LIST_NAME = "logs"
 ERROR_NAME = "error"
-LOG_DATE_NAME = "created_at"
 
 
 class RequestError(Exception):
@@ -70,15 +70,9 @@ class LogReceiver:
         if data[ERROR_NAME]:
             raise ValueError(data[ERROR_NAME])
 
-        log_list = data[LOG_LIST_NAME]
-        for element in log_list:
-            element[LOG_DATE_NAME] = datetime.fromisoformat(element[LOG_DATE_NAME])
+        log_list = list(map(LogItem.parse_obj, data[LOG_LIST_NAME]))
 
         if sort_by_time:
-
-            def key(element):
-                return element[LOG_DATE_NAME]
-
-            sort(log_list, key)
+            sort(log_list, key=lambda x: x.created_at)
 
         return log_list

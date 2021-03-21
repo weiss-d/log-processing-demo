@@ -9,7 +9,7 @@ def test_sort_list_of_digits() -> None:
 
 
 def test_sort_corner_cases() -> None:
-    empty_list = []
+    empty_list = []  # type: ignore
     one_element_list = [1]
     two_element_list = [2, 1]
     duplicate_element_list = [1, 2, 1]
@@ -26,9 +26,7 @@ def test_sort_corner_cases() -> None:
 
 
 def test_sort_real_data(fake_log_list, fake_log_list_sorted):
-    def key(element):
-        return element["created_at"]
 
     my_list = fake_log_list
-    sort.sort(my_list, key=key)
+    sort.sort(my_list, key=lambda x: x.created_at)
     assert my_list == fake_log_list_sorted

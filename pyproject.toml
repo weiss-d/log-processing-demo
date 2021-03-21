@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.25.1"
+pydantic = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.1"
@@ -15,6 +16,7 @@ ipython = "^7.19.0"
 ipdb = "^0.13.4"
 ptpython = "^3.0.16"
 pytest-mock = "^3.5.1"
+flake8 = "^3.9.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0a5"]
