@@ -109,9 +109,16 @@ class Database:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 created_at timestamp NOT NULL,
                 user_id TEXT NOT NULL,
-                first_name TEXT,
-                second_name TEXT,
                 message TEXT
+            );
+            """
+        )
+        self.cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS users (
+                user_id TEXT PRIMARY KEY,
+                first_name TEXT,
+                second_name TEXT
             );
             """
         )
@@ -120,15 +127,20 @@ class Database:
         for element in message_list:
             self.cursor.execute(
                 """
+                INSERT OR IGNORE INTO users (user_id, first_name, second_name)
+                VALUES (?, ?, ?)
+                """,
+                (element.user_id, element.first_name, element.second_name),
+            )
+            self.cursor.execute(
+                """
                 INSERT INTO 'log_messages'
-                    ('created_at', 'user_id', 'first_name', 'second_name', 'message')
-                VALUES (?, ?, ?, ?, ?);
+                    ('created_at', 'user_id', 'message')
+                VALUES (?, ?, ?);
                 """,
                 (
                     element.created_at,
                     element.user_id,
-                    element.first_name,
-                    element.second_name,
                     element.message,
                 ),
             )
@@ -168,10 +180,12 @@ class Database:
 
         self.cursor.execute(
             """
-            SELECT created_at, user_id, first_name, second_name, message
-            FROM log_messages
-            WHERE created_at > ? AND created_at < ?
-            ORDER BY created_at;
+            SELECT lms.created_at, usr.user_id, usr.first_name, usr.second_name, lms.message
+            FROM log_messages lms
+                JOIN users usr
+                    ON lms.user_id = usr.user_id
+            WHERE lms.created_at > ? AND lms.created_at < ?
+            ORDER BY lms.created_at;
             """,
             time_boundaries,
         )
